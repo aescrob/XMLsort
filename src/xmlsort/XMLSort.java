@@ -5,6 +5,11 @@
  */
 package xmlsort;
 
+import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
+import java.util.Set;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,6 +62,7 @@ public class XMLSort {
                 Returns a NodeList of all the Elements in document order with a given tag name
                 and are contained in the document
             */
+            /*
             NodeList nodes = doc.getElementsByTagName(element);
             System.out.println("\nHere you go => Total # of Elements: " + nodes.getLength());
             
@@ -69,9 +75,42 @@ public class XMLSort {
                 }
                 
             }
+            */
+            //NodeList childNodes = doc.getChildNodes();
+            NodeList childNodes = doc.getElementsByTagName(element);
             
+            HashMap<String, Integer> mapUniqueChildNodes = new HashMap<>();
+            HashMap<String, Node> mapSortElementNodes = new HashMap<>();
+            String sortElement = "actionconfig";
             
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                NodeList childNodesStart = childNodes.item(i).getChildNodes();
+                for (int i2 = 0; i2 < childNodesStart.getLength(); i2++) {
+                    Node childNode = childNodesStart.item(i2);
+                    if (childNode.getNodeName().equalsIgnoreCase(sortElement)) {
+                        if (childNode.getNodeType() == Node.ELEMENT_NODE){
+                            Element eElement = (Element) childNode;
+                            mapSortElementNodes.put(eElement.getAttribute("name"), childNode);
+                            System.out.println(eElement.getAttribute("name"));
+                        }                    
                     
+                    }
+                    mapUniqueChildNodes.put(childNode.getNodeName(), i2);
+                }
+                
+            }
+            Set set = mapUniqueChildNodes.entrySet();
+            Iterator iterator = set.iterator();
+            while(iterator.hasNext()) {
+                Map.Entry mapEntry = (Map.Entry)iterator.next();
+                System.out.println("Got " + mapEntry.getValue() + " entries for " + mapEntry.getKey());
+            }
+            Map<String, Node> sortedElementNodes = new TreeMap<String, Node>(mapSortElementNodes);
+            int i3 = 0;
+            for (Map.Entry entry : sortedElementNodes.entrySet()){
+                i3++;
+                System.out.println("actionconfig names sorted: " + i3 + "\t" + entry.getKey());
+            }
             
         } catch (Exception e) {
             System.out.println(e);
