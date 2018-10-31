@@ -21,6 +21,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
+
       
 
 
@@ -32,6 +33,7 @@ import org.w3c.dom.Element;
  */
 public class XMLSort {
 
+    static Map<String, Counter> mapCounters = new HashMap();
     /**
      * @param args the command line arguments
      */
@@ -90,12 +92,18 @@ public class XMLSort {
                     if (childNode.getNodeName().equalsIgnoreCase(sortElement)) {
                         if (childNode.getNodeType() == Node.ELEMENT_NODE){
                             Element eElement = (Element) childNode;
-                            mapSortElementNodes.put(eElement.getAttribute("name"), childNode);
-                            System.out.println(eElement.getAttribute("name"));
+                            if (eElement.getAttribute("type").equalsIgnoreCase("SERVER")){
+                                mapSortElementNodes.put(eElement.getAttribute("name"), childNode);
+                                System.out.println(getCountVal(eElement.getAttribute("type")) + "\t" + eElement.getAttribute("type") + "\t" + eElement.getAttribute("name"));
+                            }else {
+                                System.out.println(getCountVal(eElement.getAttribute("type")) + "\t" + eElement.getAttribute("type") + "\t" + eElement.getAttribute("name"));
+                            }                       
+                            
                         }                    
                     
                     }
-                    mapUniqueChildNodes.put(childNode.getNodeName(), i2);
+                    String nodeName = childNode.getNodeName();
+                    mapUniqueChildNodes.put(childNode.getNodeName(), getCountVal(nodeName));
                 }
                 
             }
@@ -103,19 +111,28 @@ public class XMLSort {
             Iterator iterator = set.iterator();
             while(iterator.hasNext()) {
                 Map.Entry mapEntry = (Map.Entry)iterator.next();
-                System.out.println("Got " + mapEntry.getValue() + " entries for " + mapEntry.getKey());
+                System.out.println(mapEntry.getValue() + "\tentries for actionconfig = " + mapEntry.getKey());
             }
             Map<String, Node> sortedElementNodes = new TreeMap<String, Node>(mapSortElementNodes);
             int i3 = 0;
             for (Map.Entry entry : sortedElementNodes.entrySet()){
-                i3++;
-                System.out.println("actionconfig names sorted: " + i3 + "\t" + entry.getKey());
+                System.out.println("actionconfig Server Tools sorted: " + ++i3 + "\t" + entry.getKey());
             }
             
         } catch (Exception e) {
             System.out.println(e);
         }
         // TODO code application logic here
+    }
+    
+    static int getCountVal(String cName) {
+         if(mapCounters.get(cName) != null) {
+             return mapCounters.get(cName).getCount();
+         }else {
+             mapCounters.put(cName, new Counter());
+             return mapCounters.get(cName).getCount();
+         }      
+        
     }
     
 }
